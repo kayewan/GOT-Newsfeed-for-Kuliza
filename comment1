@@ -1,0 +1,55 @@
+
+<form  method="post" name="form4" >
+  <table width="448"   align="center">
+    <tr>
+      <td width="36"><input type="image" name="img_logo" id="img_logo" src= "<?php if(isset($cculogo)) echo $cculogo; else echo "Logos/default.jpg"; ?>" /></td>
+      <td colspan="2">
+        <label id="lb_uname">
+          <?php if(isset($ccuname)) echo $ccuname;?>
+          <br />
+        </label>
+   
+              
+          <label id="lb_time">
+            <?php if(isset($ctime))echo $ctime?>
+          </label>
+    </td>
+    </tr>
+    <tr>
+      <td colspan="3"><label for="ta_content"></label>
+      <textarea name="ta_content" cols="45" rows="5" disabled="disabled" readonly="readonly" id="ta_content"><?php if(isset($ccontent))echo $ccontent?></textarea></td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td><td width="269"><div align="center">
+        <input class="like" type="submit" name="btn_cclike<?php echo $id?>" id="btn_like" value="Like" />
+        <input type="submit" class="like" name="btn_dislike" id="btn_dislike" value="Dislike" hidden="<?php echo $dislikev; ?>" />
+      </div></td>
+      <td width="127">
+</td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+  <td><div align="center"><a class="link" href="#" target="_self" id="lk_likeCnt<?php echo $id?>" >
+    <?php if(isset($cclikeCount))echo $cclikeCount?>
+    users like this</a></div></td>
+      <td>&nbsp;</td>
+        </tr>
+  </table>
+  </form>
+  
+  <form id="overlay_form" style="display:none">
+	<h2>Likes</h2>
+	<?php 
+	$i=0;
+	
+	foreach ($likedBy as $obj)
+	{ echo $obj[$i]."\n";
+		++$i; 
+	}
+	?>
+	<br />
+	<a href="#" id="close" >Close</a>
+    </form>
+  
+	
+</form>
