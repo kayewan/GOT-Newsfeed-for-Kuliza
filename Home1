@@ -1,0 +1,69 @@
+<?php
+
+		$uid=(string)$_GET['uid'];
+		$sflag=false;
+		$m = new MongoClient();
+        $db = $m->selectDB("newsfeed");
+        $collection = $db->selectCollection("user_mst");
+		$cursor=$collection->find(array("_id" => new MongoID($uid)));
+			
+			$cnt=$cursor->count();
+			
+			if($cnt>0) {
+     	
+				foreach($cursor as $obj)
+				{
+					$uname=$obj['u_name'];
+					$ulogo=$obj['logo_id'];
+					
+				}
+		}
+		
+	?>
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Good Old Times Newsfeed</title>
+
+
+<link rel="stylesheet" href="styles/layout.css" type="text/css">
+
+</head>
+
+<body>
+<form id="form1" name="form1" method="post" >
+  <table width="100%"  >
+    <tr>
+      <td height="158" background="images/header.png" >&nbsp;</td>
+    </tr>
+    <tr>
+      <td align="center"><table align="center" class="menu" width="645" >
+    <tr>
+      <td align="center"><input class="menu" name="btn_home" type="submit" value="Home"  /></td>
+      <td align="center"><input class="menu" name="btn_user" type="submit" value="User"   /></td>
+      <td align="center">
+      <a href="Register.php" class="menu">Register</a></td>
+     
+      <td align="center"><input class="menu" name="btn_Logout" type="submit" value="Logout"  /></td>
+     
+    </tr>
+  </table><input name="txt_search" type="text"  /><input name="btn_search" class="menu" type="submit" value="Search User" /></td>
+    </tr>
+    <tr>
+      <td class="lowerborder"><?php include("post_input.php");?></td>
+    </tr>
+    <tr>
+      <td ><?php include("post_output.php");?>;</td>
+   
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+    </tr>
+  </table>
+</form>
+</body>
+</html>
