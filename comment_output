@@ -1,0 +1,150 @@
+<?php
+
+$uid=(string)$_GET['uid'];
+$link=(string)$_GET['link'];
+$sid=substr($link,5);
+
+		$m = new MongoClient();
+        $db = $m->selectDB("newsfeed");
+        $collection = $db->selectCollection("comment_mst");
+	
+        $cursor = $collection->find(array("s_id"=>$sid));
+        $num_docs = $cursor->count();
+$i=0;
+        if ($num_docs > 0) {
+            foreach ($cursor as $obj) {
+              		
+				$id[]=$obj['_id'];
+								
+				comment($id[$i]);
+				$i++;
+    
+	        }
+			//print_r($content);
+        } else {
+// if no products are found, we show this message
+            echo "No comments for this post found\n";
+        }
+
+
+ 
+  function comment($id)
+  {
+	 	$m = new MongoClient();
+        $db = $m->selectDB("newsfeed");
+        $collection = $db->selectCollection("comment_mst");
+	     $cursor = $collection->find(array("_id"=>$id));
+		   $num_docs = $cursor->count();
+
+        if ($num_docs > 0) {
+            foreach ($cursor as $obj) {
+                $ccontent = $obj['content'];
+				$cclikeCount = $obj['like_cnt'];
+				$cclikedBy[] = $obj['like_by'];
+				$commentBy = $obj['comment_by'];
+				$ctime = $obj['time'];
+		
+					 $collection1 = $db->selectCollection("user_mst");
+			echo $commentBy;
+		$cursor1=$collection1->find(array("_id" => new MongoID($commentBy)));
+			  $num_docs = $cursor1->count();
+				echo $num_docs;
+		
+			}
+		}
+		
+		
+		
+		//fethcing current user details 
+		foreach ($cursor1 as $obj) 
+		{
+			
+			$ccuname=$obj['u_name'];
+			$cculogo=$obj['logo_id'];
+		}echo $ccuname;
+  
+	include("comment1.php");
+		
+	
+	
+//Like Module 
+
+
+$userflag=true;
+
+
+foreach($id as $cid)//cid=current status id, $id= the array with all the status ids 
+{
+
+if(isset($_REQUEST['btn_cclike'.$cid]))
+{
+		$cursor = $collection->find(array("_id"=>$cid));
+        $num_docs = $cursor->count();
+		$i=0;
+        if ($num_docs > 0) {
+            foreach ($cursor as $obj) {
+			
+			$likedBy = $obj['like_by'];
+				
+			}
+			
+		}
+	
+	if(isset($likedBy))
+	{
+	foreach($likedBy as $obj)//checking if the like was done before or not 
+	{
+		if($obj == $uid)
+		$userflag=false;	
+	}
+	}
+	else 
+	{
+		$userflag=true;
+	}
+	if($userflag==true)
+	{
+		global $uid;
+	 $collection->update(array("_id"=>$cid), 
+     array('$inc'=>array("like_cnt"=>1)));
+	  echo "here";
+	 $collection->update(array("_id"=>$cid), 
+     array('$push'=>array("like_by"=>$uid)));
+	 $likev="true";
+	 $dislikev="false";
+		
+		
+	}
+	  
+}
+}
+	
+	
+	  
+	  
+	  }
+  ?>
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+<link rel="stylesheet" href="styles/layout.css" type="text/css">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Untitled Document</title>
+</head>
+
+<body>
+</body>
+</html>
