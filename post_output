@@ -1,0 +1,265 @@
+<?php
+
+//$uid="56667e3e81af238075000029";
+//$con="array('uploaded_by'=>$uid)";
+
+{
+	
+	
+		
+		$m = new MongoClient();
+        $db = $m->selectDB("newsfeed");
+        $collection = $db->selectCollection("status_mst");
+	    $likev="false";
+		$dislikev="true";
+		 
+		
+		
+		//Button decission Module  
+		if(isset($_REQUEST['btn_search']))
+		{
+			$usname= $_REQUEST['txt_search'];
+			$usname=$usname;
+			 $db = $m->selectDB("newsfeed");
+       		 $collection = $db->selectCollection("status_mst");
+	   
+			$collection1 = $db->selectCollection("user_mst");
+	    	$cursor1 = $collection1->find(array("u_name"=>$usname));
+			foreach($cursor1 as $obj)
+			{
+				$usid=$obj['_id'];
+			}	echo $usid;
+		$cursor = $collection->find(array("uploaded_by"=>(string)$usid));
+		}
+		else if(isset($_REQUEST['btn_home']))
+		$cursor = $collection->find();
+        else if(isset($_REQUEST['btn_user']))
+		$cursor = $collection->find(array('uploaded_by'=>$uid));
+        //$cursor = $collection->find();
+        else 
+		$cursor = $collection->find();
+		
+		
+		$num_docs = $cursor->count();
+		
+		
+$i=0;
+        if ($num_docs > 0) {
+            foreach ($cursor as $obj) {
+             
+			 	$id[]=$obj['_id'];
+				status($id[$i],$i,$uid);
+				$i++;
+            }
+			
+        } 
+		else {
+            echo "No posts from this user found\n";
+		}
+		
+}
+
+
+
+		
+// The Like Module
+
+$userflag=true;
+
+if(isset($id)){
+	
+foreach($id as $cid)//cid=current status id, $id= the array with all the status ids 
+{
+
+if(isset($_REQUEST['btn_like'.$cid]))
+{
+		  
+//		$m = new MongoClient();
+  //      $db = $m->selectDB("newsfeed");
+      //  $collection = $db->selectCollection("status_mst");
+		$cursor = $collection->find(array("_id"=>$cid));
+        $num_docs = $cursor->count();
+		$i=0;
+        if ($num_docs > 0) {
+            foreach ($cursor as $obj) {
+			
+			$likedBy = $obj['like_by'];
+				
+			}
+			
+		}
+	
+	
+	foreach($likedBy as $obj)//checking if the like was done before or not 
+	{
+		if($obj == $uid)
+		$userflag=false;	
+	}
+	
+	if($userflag==true)
+	{
+	 $collection->update(array("_id"=>$cid), 
+     array('$inc'=>array("like_cnt"=>1)));
+	  echo "here";
+	 $collection->update(array("_id"=>$cid), 
+     array('$push'=>array("like_by"=>$uid)));
+	 $likev="true";
+	 $dislikev="false";
+		
+		
+	}
+	  
+}
+}
+
+}
+
+//-----------------------------------------------------------------
+
+
+
+?>
+ <?php
+ //include('comment.php');
+  function status($id,$i,$uid)
+  {
+	 	$m = new MongoClient();
+        $db = $m->selectDB("newsfeed");
+        $collection = $db->selectCollection("status_mst");
+	     $cursor = $collection->find(array("_id"=>$id));
+		   $num_docs = $cursor->count();
+
+        if ($num_docs > 0) {
+            foreach ($cursor as $obj) {
+                $content = $obj['content'];
+				$likeCount = $obj['like_cnt'];
+				$likedBy[] = $obj['like_by'];
+				$commentCount = $obj['comment_cnt'];
+				$commentBy[] = $obj['comment_by'];
+				$suid= $obj['uploaded_by'];
+				$stime = $obj['time'];
+		
+					 $collection1 = $db->selectCollection("user_mst");
+			
+		$cursor1=$collection1->find(array("_id" => new MongoID($suid)));
+			  $num_docs = $cursor1->count();
+				
+		
+			}
+		}
+		
+		
+		
+		//fethcing current user details 
+		foreach ($cursor1 as $obj) 
+		{
+			
+			$suname=$obj['u_name'];
+			$sulogo=$obj['logo_id'];
+		}
+    $cid=$uid;
+	
+
+	include("status1.php");
+		
+	
+	
+	  
+	  
+	  }
+  ?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Untitled Document</title>
+
+<link rel="stylesheet" href="styles/layout.css" type="text/css">
+<script type="text/javascript" src="jquery-1.6.1.min.js"></script>
+<script type="text/javascript">
+function idfunc(id)
+{
+ var link = "comment_input.php?uid=<?php echo (string)$cid;?>&link="+id;	
+	window.open(link,'_blank','width=520,height=180');
+}
+
+function idfunc1(id)
+{
+ var link = "comment_output.php?uid=<?php echo (string)$cid;?>&link="+id;	
+	window.open(link,'_blank','width=690,height=760');
+}
+
+$(document).ready(function(){
+//open popup
+<?php 
+foreach($id as $cid){
+?>
+$("#lk_likeCnt<?php echo $cid?>").click(function(){
+  $("#overlay_form").fadeIn(1000);
+  positionPopup();
+});
+<?php }?>
+
+
+
+
+//close popup
+$("#close").click(function(){
+	$("#overlay_form").fadeOut(500);
+});
+});
+
+//position the popup at the center of the page
+function positionPopup(){
+  if(!$("#overlay_form").is(':visible')){
+    return;
+  } 
+  $("#overlay_form").css({
+      left: ($(window).width() - $('#overlay_form').width()) / 2,
+      top: ($(window).width() - $('#overlay_form').width()) / 7,
+      position:'absolute'
+  });
+}
+
+//maintain the popup at center of the page when browser resized
+$(window).bind('resize',positionPopup);
+
+</script>
+<style>
+#overlay_form{
+	position: absolute;
+	border: 5px solid gray;
+	padding: 10px;
+	background: white;
+	width: 270px;
+	height: 190px;
+}
+
+
+
+
+#pop{
+	display: block;
+	border: 1px solid gray;
+	width: 65px;
+	text-align: center;
+	padding: 6px;
+	border-radius: 5px;
+	text-decoration: none;
+	margin: 0 auto;
+}
+</style>
+
+
+</head>
+
+<body >
+<form id="form3" name="form3" method="post" >
+
+  
+
+</form>
+
+</body>
+</html>
