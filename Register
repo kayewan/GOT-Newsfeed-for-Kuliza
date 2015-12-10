@@ -1,0 +1,80 @@
+<?php 
+
+if(isset($_POST['btn_reg']))
+{
+$m = new MongoClient();
+        $db = $m->selectDB("newsfeed");
+        $collection = $db->selectCollection("user_mst");
+		$document=array(
+		
+		"u_name"=> $_POST['txt_uname'],
+		"u_pwd"=> $_POST['txt_pwd'],
+		"logo_id"=> $_POST['txt_ulogo']
+		
+		
+		);
+$collection->insert($document);
+
+	
+}
+
+?>
+
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Good Old Times Newsfeed</title>
+
+
+<link rel="stylesheet" href="styles/layout.css" type="text/css">
+
+</head>
+
+<body>
+<form id="form1" name="form1" method="post" >
+  <table width="100%"  border="none">
+    <tr>
+      <td height="158" background="images/header.png" >&nbsp;</td>
+    </tr>
+    <tr><td>  <table width="403"   align="center">
+    <tr>
+      <td width="128">&nbsp;</td>
+      <td width="168">&nbsp;</td>
+      <td width="32">&nbsp;</td>
+    </tr>
+    <tr>
+      <td>User Name</td>
+      <td><label for="txt_uname"></label>
+      <input type="text" name="txt_uname" id="txt_uname" /></td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td>Password</td>
+      <td><label for="txt_pwd"></label>
+      <input type="password" name="txt_pwd" id="txt_pwd" /></td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td>Confirm Password</td>
+      <td><label for="txt_cpwd"></label>
+      <input type="password" name="txt_cpwd" id="txt_cpwd" /></td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td>Logo Path</td>
+      <td><label for="txt_logo"></label>
+      <input type="text" name="txt_ulogo" id="txt_ulogo" /></td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td><a href="login.php" class="link">Already a member ? Login</a></td>
+      <td><input name="btn_reg" type="submit" class="btn" id="btn_reg" value="Register" /></td>
+      <td>&nbsp;</td>
+    </tr>
+  </table></td></tr></table>
+  <div align="center"></div>
+</form>
+</body>
+</html>
