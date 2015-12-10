@@ -1,0 +1,80 @@
+<?php
+$uid=(string)$_GET['uid'];
+$link=(string)$_GET['link'];
+$sid=substr($link,4);
+
+function comment_input($content,$uid,$sid)
+{
+		$m = new MongoClient();
+        $db = $m->selectDB("newsfeed");
+        $cid =$sid;
+		
+		$collection = $db->selectCollection("comment_mst");
+		//$uid="2.0";
+		$date = date("Y-m-d H:i:s");
+	
+	
+		$document=array(
+		
+		"content"=>$content,
+		"s_id"=>$sid,
+		"like_cnt"=>0,
+		"like_by"=>array(""),
+		"comment_by"=>$uid,
+		"time"=> $date
+		
+		);	
+		$collection->insert($document);
+		
+		$collection = $db->selectCollection("status_mst");
+		$collection->update(array("_id"=>new MongoID($cid)),array('$inc'=>array("comment_cnt"=>1)));
+	    $collection->update(array("_id"=>new MongoID($cid)),array('$push'=>array("comment_by"=>$uid)));
+   echo "Status Updated successfully";
+	
+}
+
+
+
+
+//$uid="56667e3e81af238075000029";
+if(isset($_REQUEST['btn_comment']))
+{
+		$content=$_REQUEST['ta_content'];
+		comment_input($content,$uid,$sid);
+		
+}
+
+
+?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+<link rel="stylesheet" href="styles/layout.css" type="text/css">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Untitled Document</title>
+</head>
+
+<body>
+<form method="post" enctype="multipart/form-data" name="form2" id="form1">
+  <table class="post_input" width="200"   align="center">
+    <tr>
+      <td>&nbsp;</td>
+      <td><label for="ta_content"></label>
+      <textarea name="ta_content" id="ta_content" cols="45" rows="5"></textarea></td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td>
+
+</td>
+      <td align="right"><input type="submit" name="btn_comment" id="btn_comment" value="Comment" /></td>
+      <td>&nbsp;</td>
+    </tr>
+    
+   
+  </table>
+</form>
+</body>
+</html>
